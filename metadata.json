@@ -1,0 +1,6 @@
+{
+  "name": "שחמט עם כלביא 🇮🇱",
+  "description": "A modern chess game where the user plays against a Gemini-powered AI. Features include move validation, check/checkmate detection, and an AI opponent.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
