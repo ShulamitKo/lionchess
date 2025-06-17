@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ChessBoard from './components/Board';
 import PromotionModal from './components/PromotionModal';
@@ -68,7 +67,7 @@ const App: React.FC = () => {
       gameOver = true;
     }
     
-    setGameState(prev => ({ ...prev, gameStatus: newStatus, isCheck, gameOver }));
+    setGameState((prev: GameState) => ({ ...prev, gameStatus: newStatus, isCheck, gameOver }));
     return { isCheck, gameOver };
   }, []);
 
@@ -79,7 +78,7 @@ const App: React.FC = () => {
     const pieceAtPos = gameState.board[pos.row][pos.col];
 
     if (gameState.selectedPiecePos) { 
-      const move = gameState.possibleMoves.find(m => m.to.row === pos.row && m.to.col === pos.col);
+      const move = gameState.possibleMoves.find((m: Move) => m.to.row === pos.row && m.to.col === pos.col);
       if (move) { 
         const movingPiece = gameState.board[gameState.selectedPiecePos.row][gameState.selectedPiecePos.col];
         const promotionRank = gameState.currentPlayer === 'white' ? 0 : 7;
@@ -91,14 +90,14 @@ const App: React.FC = () => {
         }
       } else if (pieceAtPos && pieceAtPos.color === gameState.currentPlayer) { 
         const newPossibleMoves = ChessLogic.getValidMoves(gameState.board, pos, gameState.currentPlayer, gameState.lastMove, gameState.castlingRights);
-        setGameState(prev => ({ ...prev, selectedPiecePos: pos, possibleMoves: newPossibleMoves }));
+        setGameState((prev: GameState) => ({ ...prev, selectedPiecePos: pos, possibleMoves: newPossibleMoves }));
       } else { 
-        setGameState(prev => ({ ...prev, selectedPiecePos: null, possibleMoves: [] }));
+        setGameState((prev: GameState) => ({ ...prev, selectedPiecePos: null, possibleMoves: [] }));
       }
     } else { 
       if (pieceAtPos && pieceAtPos.color === gameState.currentPlayer) {
         const newPossibleMoves = ChessLogic.getValidMoves(gameState.board, pos, gameState.currentPlayer, gameState.lastMove, gameState.castlingRights);
-        setGameState(prev => ({ ...prev, selectedPiecePos: pos, possibleMoves: newPossibleMoves }));
+        setGameState((prev: GameState) => ({ ...prev, selectedPiecePos: pos, possibleMoves: newPossibleMoves }));
       }
     }
   };
@@ -134,7 +133,7 @@ const App: React.FC = () => {
       }
     }
     
-    setGameState(prev => ({
+    setGameState((prev: GameState) => ({
       ...prev,
       board: newBoard,
       currentPlayer: nextPlayer,
@@ -160,7 +159,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (gameState.currentPlayer === AI_PLAYER_COLOR && !gameState.gameOver && gameState.isAITurn) {
-      setGameState(prev => ({ ...prev, isLoadingAI: true, gameStatus: "AI חושב..." }));
+      setGameState((prev: GameState) => ({ ...prev, isLoadingAI: true, gameStatus: "AI חושב..." }));
       
       const performAIMove = async () => {
         const aiMove = await getAIMove(gameState.board, AI_PLAYER_COLOR, gameState.moveHistory, gameState.castlingRights, gameState.lastMove, gameState.difficulty);
@@ -173,9 +172,9 @@ const App: React.FC = () => {
           makeMove(aiMove);
         } else {
            console.error("AI could not make a move. This might be a stalemate/checkmate or AI service error.");
-            setGameState(prev => ({ ...prev, gameStatus: "AI לא יכול לבצע מהלך. בדוק אם זה פט או מט."}));
+            setGameState((prev: GameState) => ({ ...prev, gameStatus: "AI לא יכול לבצע מהלך. בדוק אם זה פט או מט."}));
         }
-        setGameState(prev => ({ ...prev, isLoadingAI: false, isAITurn: false }));
+        setGameState((prev: GameState) => ({ ...prev, isLoadingAI: false, isAITurn: false }));
       };
       
       const aiMoveTimer = setTimeout(performAIMove, 1000); 
@@ -218,7 +217,7 @@ const App: React.FC = () => {
         setIsReplayActive(false);
         setReplayingAiMoveBoard(null);
         // Trigger attention on current board after replay
-        setAiMoveAttentionKey(prev => prev + 1); 
+        setAiMoveAttentionKey((prev: number) => prev + 1); 
         activeReplayTimerRef.current = null;
       }, 2000); // 2 seconds for showing the "before" state
     }
@@ -250,7 +249,7 @@ const App: React.FC = () => {
     if (!originalMovingPieceType) return "כלי לא ידוע";
     
     const colorName = PLAYER_COLOR_HEBREW[AI_PLAYER_COLOR]; // AI's color
-    return `${PIECE_NAMES_HEBREW[originalMovingPieceType]} ה${colorName}`;
+    return `${PIECE_NAMES_HEBREW[originalMovingPieceType as PieceSymbol]} ה${colorName}`;
   };
 
   const handleDifficultyChange = (level: DifficultyLevel) => {
@@ -266,7 +265,7 @@ const App: React.FC = () => {
        : 'bg-slate-600 hover:bg-slate-500 text-slate-100' // Changed from text-slate-200
      }`;
 
-  const groupedMoveHistory = [];
+  const groupedMoveHistory: { moveNumber: number; white: string; black: string }[] = [];
   for (let i = 0; i < gameState.moveHistory.length; i += 2) {
     groupedMoveHistory.push({
       moveNumber: Math.floor(i / 2) + 1,
@@ -406,6 +405,7 @@ const App: React.FC = () => {
       )}
        <footer className="mt-6 text-center text-slate-500 text-xs sm:text-sm">
         <p>&copy; {new Date().getFullYear()} שחמט עם כלביא 🇮🇱. כל הזכויות שמורות.</p>
+        <p>פותח באהבה ע"י שולמית</p>
       </footer>
     </div>
   );
